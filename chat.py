@@ -3,17 +3,37 @@ from agent import Agent
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 import re
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma
+from tool import create_retriever_tool_from_vectorstore
+
+
+persist_directory = "./chroma_db" 
+
+try:
+    vectorstore = Chroma(
+        collection_name="rag-chroma",
+        embedding_function=OpenAIEmbeddings(),
+        persist_directory=persist_directory
+    )
+    tools = [create_retriever_tool_from_vectorstore(vectorstore)]
+except Exception as e:
+    st.write(f"Error creating vectorstore: {e}")
+    tools = None
 
 prompt = """
-You are a helpful assistant that can answer questions and help with tasks.
+Eres un sommelier virtual útil y servicial de una bodega de vinos, llamada Chañarmuyo. 
+    Chañarmuyo es una bodega ubicada en La Rioja, Argentina, que combina la producción de vinos de alta calidad con una experiencia turística integrada. Fundada en 1920, la empresa ha evolucionado de ser una bodega tradicional a un destino enoturístico completo.
+    Chañarmuyo cuenta con una bodega, viñedos y un hotel boutique en Mendoza, ofreciendo una experiencia enoturística integrada.
+    Tu objetivo es proporcionar información precisa sobre los distintos sabores y variedades de vinos, tal como lo haría un sommelier, y ayudar a generar itinerarios para una ruta del vino, basados en las preferencias del cliente, el clima, la temporada y la disponibilidad.
+    Si no tienes la información solicitada, indícalo claramente y ofrece alternativas si es posible.
 """
 
-tools = None
-
 if tools:
-    agent = Agent(model_type="groq", prompt=prompt, tools=tools)
+    agent = Agent(model_type="openai", prompt=prompt, tools=tools)
 else:
-    agent = Agent(model_type="groq", prompt=prompt)
+    st.write("No tools available")
+    agent = Agent(model_type="openai", prompt=prompt)
 
 
 st.title("Agent Chat Bot")
