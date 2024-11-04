@@ -55,7 +55,7 @@ else:
     agent = Agent(model_type="openai", prompt=prompt)
 
 # Estilos de la página
-st.set_page_config(page_title="Chañarmuyo - Sommelier Virtual", page_icon="🍷", layout="wide")
+st.set_page_config(page_title="Chañarmuyo - Bodega Amigo", page_icon="🍷", layout="wide")
 st.markdown(
     """
     <style>
